@@ -2,10 +2,15 @@ import tkinter as tk
 import datetime as dt
 import configparser
 import os
+from tkinter import ttk
+
 
 config = configparser.ConfigParser()
 days = [(0, 'Monday'), (1, 'Tuesday'), (2, 'Wednesday'), (3, 'Thursday'), (4, 'Friday'), (5, 'Saturday'), (6, 'Sunday')]
-hours = [(i, dt.time(i).strftime("%H:%M"))for i in range(24)]
+# hours = [(i, dt.time(i).strftime("%H:%M"))for i in range(24)]
+
+time = dt.datetime.strptime("12:00 AM","%I:%M %p")
+hours = [(i, (time + dt.timedelta(minutes=30*i)).strftime("%I:%M %p")) for i in range(0, 48)]
 
 
 def save_config(start, end, duration, period, selected_days):
@@ -25,8 +30,8 @@ def get_config():
     config_file = os.path.join(os.path.expanduser('~'), 'Appdata', 'Local', 'Microsoft', 'Office' 'config.ini')
     config.read(config_file)
     conf = config['DEFAULT']
-    start = conf.get('Start', fallback='08:00')
-    end = conf.get('End', fallback='17:00')
+    start = conf.get('Start', fallback='08:00 AM')
+    end = conf.get('End', fallback='05:00 PM')
     duration = conf.get('Duration', fallback='1')
     period = conf.get('Period', fallback='5')
     selected_days = tuple([int(i) for i in conf.get('Days', fallback='(0, 1, 2, 3, 4)')[1:-1].split(',')])
@@ -47,14 +52,14 @@ def build_window(start, end, duration, period, selected_days):
     #Option menus
     var_start = tk.StringVar(name="start")
     var_start.set(start)
-    menu_start = tk.OptionMenu(window, var_start, *[x[1] for x in hours])
-    menu_start.config(width=9)
+    menu_start = tk.ttk.Combobox(window, textvariable=var_start, values=[*[x[1] for x in hours]])
+    menu_start.config(width=12)
     menu_start.grid(column=2, row=0, sticky='e', padx=4)
-
+    
     var_end = tk.StringVar(name="end")
     var_end.set(end)
-    menu_end = tk.OptionMenu(window, var_end, *[x[1] for x in hours])
-    menu_end.config(width=9)
+    menu_end = tk.ttk.Combobox(window, textvariable=var_end, values=[*[x[1] for x in hours]])
+    menu_end.config(width=12)
     menu_end.grid(column=2, row=1, sticky='e', padx=4)
 
     #Entry
@@ -105,3 +110,5 @@ def show_window():
     start, end, duration, period, selected_days = get_config()
     window = build_window(start, end, duration, period, selected_days)
     window.mainloop()
+
+show_window()

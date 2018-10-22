@@ -14,8 +14,8 @@ def get_config():
     config_file = os.path.join(os.path.expanduser('~'), 'Appdata', 'Local', 'Microsoft', 'Office' 'config.ini')
     config.read(config.read(config_file))
     conf = config['DEFAULT']
-    start = conf.get('Start', fallback='08:00')
-    end = conf.get('End', fallback='17:00')
+    start = conf.get('Start', fallback='08:00 AM')
+    end = conf.get('End', fallback='05:00 PM')
     duration = int(conf.get('Duration', fallback='1'))
     period = int(conf.get('Period', fallback='5'))
     days = conf.get('Days', fallback='(0, 1, 2, 3, 4)')
@@ -83,7 +83,5 @@ def get_availability():
 
     create_email(outlook, body)
 
-
- # pyinstller --onefile ./ribbon.py
  
  
