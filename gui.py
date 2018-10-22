@@ -110,5 +110,3 @@ def show_window():
     start, end, duration, period, selected_days = get_config()
     window = build_window(start, end, duration, period, selected_days)
     window.mainloop()
-
-show_window()
