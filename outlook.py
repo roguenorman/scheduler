@@ -81,6 +81,4 @@ def get_availability():
     body = '\n'.join(slots)
 
     create_email(outlook, body)
-
-get_availability()
  
