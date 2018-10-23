@@ -58,7 +58,7 @@ def get_slots(appointments, appt_duration):
         #assert start <= end, "Cannot attend all appointments"
         if start.weekday() == end.weekday():
             if start + duration <= end:
-                free_list.append("{:%A %d %B %Y} - from {:%H:%M%p} until {:%H:%M%p}".format(start, start, end))
+                free_list.append("{:%A %d %B %Y} - from {:%I:%M%p} until {:%I:%M%p}".format(start, start, end))
                 start += duration
     return free_list
 
