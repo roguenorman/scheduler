@@ -33,15 +33,6 @@ def save_config(start, end, duration, period, selected_days):
             var_status.set('Saved!')
             lbl_status.grid()
     
-    # config.set('DEFAULT', 'Start', start)
-    # config.set('DEFAULT', 'End', end)
-    # config.set('DEFAULT', 'Duration', duration)
-    # config.set('DEFAULT', 'Period', period)
-    # config.set('DEFAULT', 'Days', selected_days)
-    # with open('config.ini', 'w') as configfile:
-    #     config.write(configfile)
-
-    
 def get_config():
     global config
     config.read("config.ini")
