@@ -7,15 +7,12 @@ import configparser
 import gui
 import os
  
-
 def get_config():
     config = configparser.ConfigParser()
-    # config_file = os.path.join(os.path.expanduser('~'), 'git', 'scheduler', 'config.ini')
-    config_file = os.path.join(os.path.expanduser('~'), 'Appdata', 'Local', 'Microsoft', 'Office' 'config.ini')
-    config.read(config.read(config_file))
+    config.read("config.ini")
     conf = config['DEFAULT']
-    start = conf.get('Start', fallback='08:00 AM')
-    end = conf.get('End', fallback='05:00 PM')
+    start = conf.get('Start', fallback='8:00')
+    end = conf.get('End', fallback='17:00')
     duration = int(conf.get('Duration', fallback='1'))
     period = int(conf.get('Period', fallback='5'))
     days = conf.get('Days', fallback='(0, 1, 2, 3, 4)')
@@ -29,7 +26,9 @@ def get_appts(calendar, day_start, day_end, appt_period, work_days):
     appt_list = []
     today = dt.datetime.today()
     date_list = [today + dt.timedelta(days=x) for x in range(0, appt_period)]
+    # dstart_splt = day_start.replace(':', " ").split()
     dstart_splt = day_start.split(":")
+    # dend_splt = day_end.replace(':', " ").split()
     dend_splt = day_end.split(":")
 
     for date in date_list:
@@ -38,8 +37,8 @@ def get_appts(calendar, day_start, day_end, appt_period, work_days):
             work_hours = (date.replace(hour=int(dstart_splt[0]), minute=int(dstart_splt[1]), second=0, microsecond=00), date.replace(hour=int(dend_splt[0]), minute=int(dend_splt[1]), second=00, microsecond=00))
             appt_list.append((work_hours[0],work_hours[0]))
             #add appointments
-            #filter = "[Start] <= '" + date.strftime("%d %m %Y") + " 11:59 PM" + "' AND [End] >= '" + date.strftime("%d %m %Y") + " 12:00 AM" + "'"
-            filter = "[Start] >= '" + date.strftime("%d %m %Y") + " " + day_start + "' AND [Start] <= '" + date.strftime("%d %m %Y") + " " + day_end + "'"
+            # filter = "[Start] > '" + date.strftime("%d%m%Y") + " 8:30 AM" + "' AND [Start] < '" + date.strftime("%d%m%Y") + " 5:00 PM" + "'"
+            filter = "[Start] >= '" + date.strftime("%d%m%Y") + " " + day_start + "' AND [Start] <= '" + date.strftime("%d%m%Y") + " " + day_end + "'"
 
             results = calendar.Items.Restrict(filter)
             for appt in results:
@@ -83,5 +82,5 @@ def get_availability():
 
     create_email(outlook, body)
 
- 
+get_availability()
  

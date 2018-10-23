@@ -9,8 +9,8 @@ config = configparser.ConfigParser()
 days = [(0, 'Monday'), (1, 'Tuesday'), (2, 'Wednesday'), (3, 'Thursday'), (4, 'Friday'), (5, 'Saturday'), (6, 'Sunday')]
 # hours = [(i, dt.time(i).strftime("%H:%M"))for i in range(24)]
 
-time = dt.datetime.strptime("12:00 AM","%I:%M %p")
-hours = [(i, (time + dt.timedelta(minutes=30*i)).strftime("%I:%M %p")) for i in range(0, 48)]
+time = dt.datetime.strptime('00:00','%H:%M')
+hours = [(i, (time + dt.timedelta(minutes=30*i)).strftime('%H:%M')) for i in range(0, 48)]
 
 
 def save_config(start, end, duration, period, selected_days):
@@ -20,18 +20,16 @@ def save_config(start, end, duration, period, selected_days):
     config.set('DEFAULT', 'Duration', duration)
     config.set('DEFAULT', 'Period', period)
     config.set('DEFAULT', 'Days', selected_days)
-    config_file = os.path.join(os.path.expanduser('~'), 'Appdata', 'Local', 'Microsoft', 'Office' 'config.ini')
-    with open(config_file, 'w') as configfile:
+    with open('config.ini', 'w') as configfile:
         config.write(configfile)
     
 
 def get_config():
     global config
-    config_file = os.path.join(os.path.expanduser('~'), 'Appdata', 'Local', 'Microsoft', 'Office' 'config.ini')
-    config.read(config_file)
+    config.read("config.ini")
     conf = config['DEFAULT']
-    start = conf.get('Start', fallback='08:00 AM')
-    end = conf.get('End', fallback='05:00 PM')
+    start = conf.get('Start', fallback='8:00')
+    end = conf.get('End', fallback='17:00')
     duration = conf.get('Duration', fallback='1')
     period = conf.get('Period', fallback='5')
     selected_days = tuple([int(i) for i in conf.get('Days', fallback='(0, 1, 2, 3, 4)')[1:-1].split(',')])
@@ -44,10 +42,9 @@ def build_window(start, end, duration, period, selected_days):
     window.resizable(False, False)
     window.columnconfigure(1, weight=1)
     window.columnconfigure(2, weight=1)
-    # bold_font = Font(size = 10, weight = "bold")
 
-    window.title("Scheduler settings")
-    window.geometry("335x270")
+    window.title('Scheduler settings')
+    window.geometry('335x270')
 
     #Option menus
     var_start = tk.StringVar(name="start")
