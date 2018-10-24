@@ -23,10 +23,9 @@ def save_config(start, end, duration, period, selected_days):
     settings = {'start': start, 'end': end, 'duration': duration, 'period': period, 'days': selected_days}
     for key, value in settings.items():
         if not value:
-            pass
-            # var_status.set('Invalid settings')
-            # lbl_status.grid()
-            # break
+            var_status.set('Invalid settings')
+            lbl_status.grid()
+            break
         else:
             config.set('DEFAULT', key, str(value))
             try:
@@ -50,13 +49,6 @@ def get_config():
     end = conf.get('End', fallback='17:00')
     duration = conf.get('Duration', fallback='1')
     period = conf.get('Period', fallback='5')
-
-    # select_days = conf.get('days', fallback='(0, 1, 2, 3, 4)')
-    # print(select_days)
-    # print(type(select_days))
-    # selected_days = tuple([int(i) for i in select_days[1:-1].split(',')])
-    # print(selected_days)
-    # print(type(selected_days))
     selected_days = tuple([int(i) for i in conf.get('days', fallback='(0, 1, 2, 3, 4)')[1:-1].split(',')])
 
     return (start, end, duration, period, selected_days)
