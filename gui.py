@@ -20,28 +20,45 @@ def save_config(start, end, duration, period, selected_days):
     #saves the settings file
     global lbl_status
     global var_status
-    settings = {'start': start, 'end': end, 'duration': duration, 'period': period, 'selected_days': selected_days}
+    settings = {'start': start, 'end': end, 'duration': duration, 'period': period, 'days': selected_days}
     for key, value in settings.items():
         if not value:
-            var_status.set('Invalid settings')
-            lbl_status.grid()
-            break
+            pass
+            # var_status.set('Invalid settings')
+            # lbl_status.grid()
+            # break
         else:
             config.set('DEFAULT', key, str(value))
-            with open('config.ini', 'w') as configfile:
-                config.write(configfile)
-            var_status.set('Saved!')
-            lbl_status.grid()
+            try:
+                home = os.path.expanduser("~")
+                path = os.path.join(home, 'Documents', 'scheduler.conf')
+                with open(path, 'w') as configfile:
+                    config.write(configfile)
+                var_status.set('Saved!')
+                lbl_status.grid()
+            except IOError as e:
+                var_status.set(e.strerror)
+                lbl_status.grid()
     
 def get_config():
     global config
-    config.read("config.ini")
+    home = os.path.expanduser("~")
+    path = os.path.join(home, 'Documents', 'scheduler.conf')
+    config.read(path)
     conf = config['DEFAULT']
     start = conf.get('Start', fallback='8:00')
     end = conf.get('End', fallback='17:00')
     duration = conf.get('Duration', fallback='1')
     period = conf.get('Period', fallback='5')
-    selected_days = tuple([int(i) for i in conf.get('Days', fallback='(0, 1, 2, 3, 4)')[1:-1].split(',')])
+
+    # select_days = conf.get('days', fallback='(0, 1, 2, 3, 4)')
+    # print(select_days)
+    # print(type(select_days))
+    # selected_days = tuple([int(i) for i in select_days[1:-1].split(',')])
+    # print(selected_days)
+    # print(type(selected_days))
+    selected_days = tuple([int(i) for i in conf.get('days', fallback='(0, 1, 2, 3, 4)')[1:-1].split(',')])
+
     return (start, end, duration, period, selected_days)
 
 
@@ -129,4 +146,3 @@ def show_window():
     start, end, duration, period, selected_days = get_config()
     window = build_window(start, end, duration, period, selected_days)
     window.mainloop()
-

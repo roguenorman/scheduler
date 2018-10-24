@@ -129,10 +129,6 @@ if __name__ == '__main__':
     else:
         RegisterAddin(OutlookAddin)
 
-# ou = OutlookAddin()
-# a1 = 'test'
-# ou.SchedulerSettings(a1)
-# ou.SchedulerCall(a1)
 
         
 
