@@ -9,13 +9,15 @@ import os
  
 def get_config():
     config = configparser.ConfigParser()
-    config.read("config.ini")
+    home = os.path.expanduser("~")
+    path = os.path.join(home, 'Documents', 'scheduler.conf')
+    config.read(path)
     conf = config['DEFAULT']
-    start = conf.get('Start', fallback='8:00')
-    end = conf.get('End', fallback='17:00')
-    duration = int(conf.get('Duration', fallback='1'))
-    period = int(conf.get('Period', fallback='5'))
-    days = conf.get('Days', fallback='(0, 1, 2, 3, 4)')
+    start = conf.get('start', fallback='8:00')
+    end = conf.get('end', fallback='17:00')
+    duration = int(conf.get('duration', fallback='1'))
+    period = int(conf.get('period', fallback='5'))
+    days = conf.get('days', fallback='(0, 1, 2, 3, 4)')
     days = tuple([int(i) for i in days[1:-1].split(',')])
     return (start, end, duration, period, days)
 
