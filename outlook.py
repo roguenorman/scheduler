@@ -26,7 +26,7 @@ def get_appts(calendar, day_start, day_end, appt_period, work_days):
     calendar.Items.Sort("[Start]")
     calendar.Items.IncludeRecurrences = True   
     appt_list = []
-    today = dt.datetime.today()
+    today = dt.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
     date_list = [today + dt.timedelta(days=x) for x in range(0, appt_period)]
     # dstart_splt = day_start.replace(':', " ").split()
     dstart_splt = day_start.split(":")
@@ -36,17 +36,29 @@ def get_appts(calendar, day_start, day_end, appt_period, work_days):
     for date in date_list:
         if date.weekday() in work_days:
             #add day start
-            work_hours = (date.replace(hour=int(dstart_splt[0]), minute=int(dstart_splt[1]), second=0, microsecond=00), date.replace(hour=int(dend_splt[0]), minute=int(dend_splt[1]), second=00, microsecond=00))
+            #work_hours = (date.replace(hour=int(dstart_splt[0]), minute=int(dstart_splt[1]), second=0, microsecond=00), date.replace(hour=int(dend_splt[0]), minute=int(dend_splt[1]), second=00, microsecond=00))
+            work_hours = (date.replace(hour=int(dstart_splt[0]), minute=int(dstart_splt[1])), date.replace(hour=int(dend_splt[0]), minute=int(dend_splt[1])))
             appt_list.append((work_hours[0],work_hours[0]))
             #add appointments
-            # filter = "[Start] > '" + date.strftime("%d%m%Y") + " 8:30 AM" + "' AND [Start] < '" + date.strftime("%d%m%Y") + " 5:00 PM" + "'"
-            filter = "[Start] >= '" + date.strftime("%d%m%Y") + " " + day_start + "' AND [Start] <= '" + date.strftime("%d%m%Y") + " " + day_end + "'"
-
+            filter = "[Start] >= '" + date.strftime("%d %m %Y") + " " + day_start + "' AND [Start] <= '" + date.strftime("%d %m %Y") + " " + day_end + "'"
+            # filter = "[Start] >= '" + date.strftime("%d %m %Y") + " " + day_start + "' AND [Start] <= '" + date.strftime("%d %m %Y") + " " + day_end + "'"
             results = calendar.Items.Restrict(filter)
             for appt in results:
+                if appt.IsRecurring:
+                    rp = appt.GetRecurrencePattern()
+                    # get first occurance
+                    start = appt.Start.strptime(appt.Start.Format() + ' +00:00', '%a %b %d %H:%M:%S %Y %z')
+                    # replace first occurance with current occurance
+                    appt_start = start.replace(day=date.day, month=date.month, year=date.year)
+                    appt.Close(1)
+                    appt = None
+                    appt = rp.GetOccurrence(appt_start)
+
                 appt_start = dt.datetime.strptime(appt.Start.Format(), '%a %b %d %H:%M:%S %Y')
                 appt_end = dt.datetime.strptime(appt.End.Format(), '%a %b %d %H:%M:%S %Y')
-                appt_list.append((appt_start, appt_end))
+                # restrict is returning items outside of the filtered time so we need to remove them
+                if work_hours[0] <= appt_start < work_hours[1]:
+                    appt_list.append((appt_start, appt_end))
             #add day end
             appt_list.append((work_hours[1],work_hours[1]))
 
@@ -78,9 +90,10 @@ def get_availability():
     get_config()
     day_start, day_end, appt_duration, appt_period, work_days = get_config()
     appointments = get_appts(calendar, day_start, day_end, appt_period, work_days)
-    print(sorted(appointments))
+    #print(sorted(appointments))
     slots = get_slots(appointments, appt_duration)
     body = '\n'.join(slots)
 
     create_email(outlook, body)
  
+get_availability()
