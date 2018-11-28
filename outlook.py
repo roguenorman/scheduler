@@ -56,6 +56,7 @@ def get_appts(calendar, day_start, day_end, appt_period, work_days):
                         rp = None
                     except pythoncom.com_error (hr, msg):
                         print ("Failed to get reoccurring appointment with code: %d: %s" % (hr, msg))
+                        rp = None
 
                 appt_start = dt.datetime.strptime(appt.Start.Format(), '%a %b %d %H:%M:%S %Y')
                 appt_end = dt.datetime.strptime(appt.End.Format(), '%a %b %d %H:%M:%S %Y')
