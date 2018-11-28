@@ -36,7 +36,6 @@ def get_appts(calendar, day_start, day_end, appt_period, work_days):
     for date in date_list:
         if date.weekday() in work_days:
             #add day start
-            #work_hours = (date.replace(hour=int(dstart_splt[0]), minute=int(dstart_splt[1]), second=0, microsecond=00), date.replace(hour=int(dend_splt[0]), minute=int(dend_splt[1]), second=00, microsecond=00))
             work_hours = (date.replace(hour=int(dstart_splt[0]), minute=int(dstart_splt[1])), date.replace(hour=int(dend_splt[0]), minute=int(dend_splt[1])))
             appt_list.append((work_hours[0],work_hours[0]))
             #add appointments
@@ -52,12 +51,16 @@ def get_appts(calendar, day_start, day_end, appt_period, work_days):
                     appt_start = start.replace(day=date.day, month=date.month, year=date.year)
                     appt.Close(1)
                     appt = None
-                    appt = rp.GetOccurrence(appt_start)
+                    try:
+                        appt = rp.GetOccurrence(appt_start)
+                        rp = None
+                    except pythoncom.com_error (hr, msg):
+                        print ("Failed to get reoccurring appointment with code: %d: %s" % (hr, msg))
 
                 appt_start = dt.datetime.strptime(appt.Start.Format(), '%a %b %d %H:%M:%S %Y')
                 appt_end = dt.datetime.strptime(appt.End.Format(), '%a %b %d %H:%M:%S %Y')
                 # restrict is returning items outside of the filtered time so we need to remove them
-                if work_hours[0] <= appt_start < work_hours[1]:
+                if work_hours[0] < appt_start < work_hours[1]:
                     appt_list.append((appt_start, appt_end))
             #add day end
             appt_list.append((work_hours[1],work_hours[1]))
@@ -96,4 +99,3 @@ def get_availability():
 
     create_email(outlook, body)
  
-get_availability()
